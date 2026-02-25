@@ -13,24 +13,41 @@
 }
 
 :root {
-  --bg: #f4f6fb;
-  --surface: #ffffff;
-  --border: #e2e8f0;
-  --primary: #6366f1;
-  --primary-fg: #ffffff;
-  --text: #1e293b;
-  --text-muted: #64748b;
-  --green: #16a34a;
-  --orange: #ea580c;
-  --red: #dc2626;
-  --blue: #2563eb;
+  --bg: oklch(1 0 0);
+  --surface: oklch(1 0 0);
+  --border: oklch(0.922 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-fg: oklch(0.985 0 0);
+  --text: oklch(0.145 0 0);
+  --text-muted: oklch(0.556 0 0);
+  
+  /* Retain basic semantic colors for badges */
+  --green: oklch(0.6 0.118 184.704); /* chart 2 proxy */
+  --orange: #ea580c; /* Tailwind orange-600 */
+  --red: oklch(0.577 0.245 27.325); /* destructive */
+  --blue: oklch(0.646 0.222 41.116); /* chart 1 proxy */
+  
   --radius: 0.625rem;
   --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
+.dark {
+  --bg: oklch(0.145 0 0);
+  --surface: oklch(0.145 0 0);
+  --border: oklch(0.269 0 0);
+  --text: oklch(0.985 0 0);
+  --text-muted: oklch(0.708 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-fg: oklch(0.205 0 0);
+  
+  --red: oklch(0.396 0.141 25.723);
+  
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+}
+
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: "Geist", "Geist Fallback", system-ui, -apple-system, sans-serif;
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.5;
@@ -53,8 +70,14 @@ body {
 
 /* ---- Header ---- */
 .app-header {
-  text-align: center;
+  text-align: left;
   padding-bottom: 0.5rem;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .app-title {
@@ -62,6 +85,22 @@ body {
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.02em;
+}
+
+.theme-toggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.4rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: var(--bg);
 }
 
 .app-subtitle {
@@ -121,6 +160,7 @@ body {
 .stat-number--primary { color: var(--primary); }
 .stat-number--green   { color: var(--green); }
 .stat-number--orange  { color: var(--orange); }
+.stat-number--red     { color: var(--red); }
 
 .stat-label {
   font-size: 0.75rem;
@@ -139,7 +179,7 @@ body {
 .progress-value { font-size: 0.85rem; color: var(--text-muted); }
 .progress-track {
   width: 100%;
-  background: var(--bg);
+  background: var(--border);
   border-radius: 9999px;
   height: 10px;
   overflow: hidden;
@@ -373,3 +413,155 @@ body {
   .todo-form { flex-direction: column; }
   .add-btn { width: 100%; }
 }
+
+/* ============================================================
+   NEW: Analytics Dashboard Styles (Ported from Tailwind)
+   ============================================================ */
+.analytics-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.analytics-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.analytics-stat-box {
+  background: var(--bg);
+  padding: 1rem;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.analytics-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-filter, .btn-tag {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-filter.active, .btn-tag.active {
+  background: var(--primary);
+  color: var(--primary-fg);
+  border-color: var(--primary);
+}
+
+.analytics-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.progress-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  width: 80px;
+}
+
+.progress-bar-bg {
+  flex: 1;
+  background: var(--border);
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  background: var(--primary);
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+/* ============================================================
+   NEW: Toast Notifications
+   ============================================================ */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 50;
+}
+
+.toast {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  min-width: 300px;
+  animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-default { border-left: 4px solid var(--primary); }
+.toast-success { border-left: 4px solid var(--green); }
+.toast-destructive { border-left: 4px solid var(--red); }
+
+.toast-content strong {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 0.15rem;
+}
+
+.toast-content p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.toast-close:hover {
+  color: var(--text);
+}
+
