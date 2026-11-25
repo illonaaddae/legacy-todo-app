@@ -1,6 +1,6 @@
 import { memo, useCallback, useMemo } from 'react'
 import DOMPurify from 'dompurify'
-import { useTodoContext } from '../context/TodoContext'
+import { useTodoContext } from '../context/useTodoContext'
 import type { Todo } from '../types/todo'
 
 interface TodoItemProps {

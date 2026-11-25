@@ -1,5 +1,5 @@
-import { memo, useMemo, useCallback } from 'react'
-import { useTodoContext } from '../context/TodoContext'
+import { memo, useMemo } from 'react'
+import { useTodoContext } from '../context/useTodoContext'
 import TodoItem from './TodoItem'
 
 // ============================================================
@@ -10,14 +10,34 @@ import TodoItem from './TodoItem'
 //   so there's no unnecessary overhead for tiny datasets.
 // ============================================================
 
-// Lazily import react-window to support virtualization
-// Vite pre-bundling sometimes fails to parse named exports from react-window
-import * as ReactWindow from 'react-window'
-// @ts-expect-error react-window types can conflict here
-const FixedSizeList = ReactWindow.FixedSizeList || (ReactWindow as any).default?.FixedSizeList
+import { List, useDynamicRowHeight, type RowComponentProps } from 'react-window'
+import type { Todo } from '../types/todo'
+
+function TodoRow({ ariaAttributes, index, style, todos }: RowComponentProps<{ todos: Todo[] }>) {
+  return (
+    <div {...ariaAttributes} style={style}>
+      <TodoItem todo={todos[index]} />
+    </div>
+  )
+}
 
 const ITEM_HEIGHT = 72 // approximate px per row
 const MAX_VISIBLE_ITEMS = 8 // show at most 8 rows before scrolling
+
+function VirtualTodoList({ todos }: { todos: Todo[] }) {
+  const orderKey = useMemo(() => todos.map((todo) => todo.id).join(','), [todos])
+  const rowHeight = useDynamicRowHeight({ defaultRowHeight: ITEM_HEIGHT, key: orderKey })
+
+  return (
+    <List
+      style={{ height: MAX_VISIBLE_ITEMS * ITEM_HEIGHT }}
+      rowCount={todos.length}
+      rowHeight={rowHeight}
+      rowComponent={TodoRow}
+      rowProps={{ todos }}
+    />
+  )
+}
 
 const TodoList = memo(function TodoList() {
   const { filteredTodos } = useTodoContext()
@@ -28,26 +48,6 @@ const TodoList = memo(function TodoList() {
       completedTodos: filteredTodos.filter((todo) => todo.completed),
     }),
     [filteredTodos]
-  )
-
-  // react-window row renderer for active todos
-  const ActiveRow = useCallback(
-    ({ index, style }: { index: number; style: React.CSSProperties }) => (
-      <div style={style}>
-        <TodoItem todo={incompleteTodos[index]} />
-      </div>
-    ),
-    [incompleteTodos]
-  )
-
-  // react-window row renderer for completed todos
-  const CompletedRow = useCallback(
-    ({ index, style }: { index: number; style: React.CSSProperties }) => (
-      <div style={style}>
-        <TodoItem todo={completedTodos[index]} />
-      </div>
-    ),
-    [completedTodos]
   )
 
   if (filteredTodos.length === 0) {
@@ -75,14 +75,7 @@ const TodoList = memo(function TodoList() {
             <p>No active todos — well done!</p>
           </div>
         ) : useVirtualActive ? (
-          <FixedSizeList
-            height={Math.min(incompleteTodos.length, MAX_VISIBLE_ITEMS) * ITEM_HEIGHT}
-            itemCount={incompleteTodos.length}
-            itemSize={ITEM_HEIGHT}
-            width="100%"
-          >
-            {ActiveRow}
-          </FixedSizeList>
+          <VirtualTodoList todos={incompleteTodos} />
         ) : (
           <div className="todo-list">
             {incompleteTodos.map((todo) => (
@@ -99,14 +92,7 @@ const TodoList = memo(function TodoList() {
             Completed ({completedTodos.length})
           </h2>
           {useVirtualCompleted ? (
-            <FixedSizeList
-              height={Math.min(completedTodos.length, MAX_VISIBLE_ITEMS) * ITEM_HEIGHT}
-              itemCount={completedTodos.length}
-              itemSize={ITEM_HEIGHT}
-              width="100%"
-            >
-              {CompletedRow}
-            </FixedSizeList>
+            <VirtualTodoList todos={completedTodos} />
           ) : (
             <div className="todo-list">
               {completedTodos.map((todo) => (
