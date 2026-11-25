@@ -1,5 +1,5 @@
 import { Suspense, lazy } from 'react'
-import { useTheme } from '../context/ThemeContext'
+import { useTheme } from '../context/useTheme'
 import TodoForm from './TodoForm'
 import SearchBox from './SearchBox'
 

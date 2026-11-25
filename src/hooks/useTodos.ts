@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import type { Todo } from '../types/todo'
 import { generateTags, sortAndFilterTodos } from '../utils/todo-helpers'
-import { useToast } from '../context/ToastContext'
+import { useToast } from '../context/useToast'
 
 // ============================================================
 // REFACTORED: useTodos — custom hook
